@@ -1,0 +1,311 @@
+@import "@fontsource-variable/sora";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+
+@theme {
+  /* Sabit koyu: renkli butonların üzerindeki yazı */
+  --color-obsidian: #090a0f;
+  /* Temaya göre değişen yüzeyler */
+  --color-base: #090a0f;
+  --color-veil: #ffffff;
+  --color-accent: #10b981;
+  --color-accent-2: #06b6d4;
+  --color-on-accent: #090a0f;
+  --color-titanium: #161822;
+  --color-titanium-2: #1d2030;
+  --color-line: rgb(255 255 255 / 0.07);
+  --color-emerald: #10b981;
+  --color-emerald-hi: #34d399;
+  --color-cyan: #06b6d4;
+  --color-cyan-hi: #22d3ee;
+  --color-amber: #f59e0b;
+  --color-rose: #f43f5e;
+  --color-violet: #8b5cf6;
+  --color-ink: #e8ecf4;
+  --color-ink-2: #9aa3b5;
+  --color-ink-3: #5c6478;
+
+  --font-sans: "Sora Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
+}
+
+/* ── Tema değişkenleri ───────────────────────────────────────
+   Obsidyen: koyu neon (orijinal). Ultra Beyaz: buz beyazı, gümüş, grafit — varsayılan. */
+:root {
+  --accent-glow: rgb(16 185 129 / 0.35);
+  --panel-a: rgb(29 32 48 / 0.72);
+  --panel-b: rgb(22 24 34 / 0.72);
+  --panel-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  --edge: linear-gradient(135deg, rgb(16 185 129 / 0.55), rgb(6 182 212 / 0.15) 40%, transparent 60%, rgb(6 182 212 / 0.35));
+  --app-bg:
+    radial-gradient(1200px 600px at 12% -10%, rgb(16 185 129 / 0.1), transparent 60%),
+    radial-gradient(900px 500px at 105% 110%, rgb(6 182 212 / 0.09), transparent 60%), rgb(9 10 15 / 0.94);
+  --field-bg: rgb(9 10 15 / 0.6);
+  color-scheme: dark;
+}
+
+:root[data-theme="ultra"] {
+  --color-base: #eef1f5;
+  --color-titanium: #ffffff;
+  --color-titanium-2: #f5f7fa;
+  --color-veil: #0c0e14;
+  --color-line: rgb(12 14 20 / 0.09);
+  --color-ink: #0c0e14;
+  --color-ink-2: #4b5466;
+  --color-ink-3: #8a93a6;
+  --color-accent: #0c0e14;
+  --color-accent-2: #3b4252;
+  --color-on-accent: #ffffff;
+  /* Beyaz zeminde okunurluk için semantik renkler bir ton koyu */
+  --color-emerald: #059669;
+  --color-cyan: #0891b2;
+  --color-amber: #d97706;
+  --color-rose: #e11d48;
+  --color-violet: #7c3aed;
+  --accent-glow: rgb(12 14 20 / 0.22);
+  --panel-a: rgb(255 255 255 / 0.92);
+  --panel-b: rgb(250 251 253 / 0.92);
+  --panel-shadow: 0 1px 2px rgb(12 14 20 / 0.04), 0 14px 34px -18px rgb(12 14 20 / 0.22);
+  --edge: linear-gradient(135deg, #c3cbd6, rgb(195 203 214 / 0.2) 40%, transparent 60%, #dfe5ec);
+  --app-bg:
+    radial-gradient(1100px 620px at 8% -12%, rgb(214 228 240 / 0.9), transparent 60%),
+    radial-gradient(900px 520px at 108% 112%, rgb(222 228 236 / 0.95), transparent 60%),
+    linear-gradient(180deg, #f6f8fb, #eceff4);
+  --field-bg: rgb(255 255 255 / 0.9);
+  color-scheme: light;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  html {
+    /* Mica'nın hafifçe sızması için yarı saydam zemin */
+    background: transparent;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--app-bg);
+    transition: background 0.4s;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+    overflow: hidden;
+    user-select: none;
+  }
+  input,
+  textarea {
+    user-select: text;
+  }
+  ::selection {
+    background: rgb(16 185 129 / 0.35);
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+}
+
+@layer components {
+  /* Cam panel: backdrop-filter YOK (GPU maliyeti) — katmanlı yarı saydam dolgu yeterli */
+  .panel {
+    position: relative;
+    border-radius: 20px;
+    background: linear-gradient(180deg, var(--panel-a), var(--panel-b));
+    border: 1px solid var(--color-line);
+    box-shadow: var(--panel-shadow);
+  }
+  /* İnce neon kenar: gradyan çerçeve maskesi */
+  .neon-edge::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--edge);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .label {
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    font-weight: 600;
+  }
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--color-line);
+    background: color-mix(in srgb, var(--color-veil) 3%, transparent);
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .field {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 11px;
+    background: var(--field-bg);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field:focus {
+    border-color: rgb(6 182 212 / 0.6);
+    box-shadow: 0 0 0 3px rgb(6 182 212 / 0.12);
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--color-veil) 2.5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-veil) 2.5%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+  }
+  .scroll {
+    overflow-y: auto;
+    /* İçerik/font yüklenirken kolonun kendiliğinden kaymasını engelle */
+    overflow-anchor: none;
+  }
+}
+
+/* İnce, oksuz kaydırma çubuğu (Windows varsayılanı yerine) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-button {
+  display: none;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-veil) 9%, transparent);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-veil) 18%, transparent);
+}
+
+/* Sayısal input oklarını gizle */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ── Animasyonlar (yalnızca transform/opacity → kompozitör katmanı) ── */
+@keyframes aura-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.aura-spin {
+  background: conic-gradient(from 0deg, var(--color-emerald), var(--color-cyan), transparent 40%, var(--color-violet), var(--color-emerald));
+  animation: aura-spin 6s linear infinite;
+  will-change: transform;
+}
+:root[data-theme="ultra"] .aura-spin {
+  background: conic-gradient(from 0deg, #0c0e14, #c3cbd6, transparent 40%, #8a93a6, #0c0e14);
+}
+
+@keyframes aura-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+.aura-pulse {
+  animation: aura-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aura-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.12) rotate(-6deg);
+  }
+  60% {
+    transform: scale(0.96) rotate(4deg);
+  }
+}
+.aura-flicker {
+  display: inline-flex;
+  transform-origin: 50% 90%;
+  animation: aura-flicker 1.6s ease-in-out infinite;
+}
+
+/* Arka planda yavaşça süzülen ışık küreleri */
+@keyframes aura-drift-a {
+  50% {
+    transform: translate3d(60px, 40px, 0) scale(1.08);
+  }
+}
+@keyframes aura-drift-b {
+  50% {
+    transform: translate3d(-50px, -30px, 0) scale(0.94);
+  }
+}
+.aura-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.5;
+  will-change: transform;
+  pointer-events: none;
+}
+.aura-orb-a {
+  background: rgb(16 185 129 / 0.22);
+  animation: aura-drift-a 22s ease-in-out infinite;
+}
+.aura-orb-b {
+  background: rgb(6 182 212 / 0.2);
+  animation: aura-drift-b 28s ease-in-out infinite;
+}
+:root[data-theme="ultra"] .aura-orb-a {
+  background: rgb(176 196 222 / 0.55);
+}
+:root[data-theme="ultra"] .aura-orb-b {
+  background: rgb(200 210 224 / 0.6);
+}
+
+/* "Sistemi izle" seçildiyse Windows'un azaltılmış hareket ayarına uy */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion="system"] *,
+  :root[data-motion="system"] *::before,
+  :root[data-motion="system"] *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,3 @@
+# Derleme çıktıları OneDrive dışında: GB larca ara dosya buluta senkronize edilmesin
+[build]
+target-dir = "C:/Users/alpmr/.cache/aura-cut-target"
